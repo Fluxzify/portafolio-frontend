@@ -57,7 +57,7 @@ export default defineNuxtConfig({
       { name: 'twitter:image', content: '/preview.jpg' }
     ],
     link: [
-      { rel: 'icon', type: 'image/png', href: '/favicon.png' }
+      { rel: 'icon', type: 'image/x-icon', href: '/Nek0_ch4n.ico' }
     ]
   }
 }

@@ -16,6 +16,9 @@
           <NuxtLink to="/dashboard/create-category" class="hover:underline">
             Crear categoría
           </NuxtLink>
+           <NuxtLink to="/" class="hover:underline">
+            Volver a Pagina Principal
+          </NuxtLink>
         </div>
       </nav>
     </header>

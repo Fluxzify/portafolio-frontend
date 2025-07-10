@@ -1,17 +1,15 @@
 <template>
   <div class="max-w-3xl mx-auto space-y-6">
+    <!-- MENSAJE -->
+  
+
     <!-- FORMULARIO -->
     <form @submit.prevent="submitPublicacion" class="bg-white shadow-md rounded p-6 space-y-4 border border-pink-200" enctype="multipart/form-data">
       <h2 class="text-xl font-bold text-pink-600">{{ form.id ? 'Editar Publicación' : 'Crear Publicación' }}</h2>
 
       <div>
         <label class="block font-semibold mb-1">Título</label>
-        <input
-          v-model="form.titulo"
-          type="text"
-          class="w-full border rounded p-2"
-          required
-        />
+        <input v-model="form.titulo" type="text" class="w-full border rounded p-2" required />
       </div>
 
       <div>
@@ -23,24 +21,46 @@
       </div>
 
       <div>
-        <label class="block font-semibold mb-1">Foto (obligatoria)</label>
-        <input
-          type="file"
-          @change="handleFileChange"
-          accept="image/*"
-          :required="!form.id" 
-          class="w-full"
-        />
-        <div v-if="previewUrl" class="mt-2">
-          <img :src="previewUrl" alt="Preview" class="max-w-xs rounded border" />
-        </div>
-      </div>
+  <label class="block font-semibold mb-1">Foto (obligatoria)</label>
 
+  <!-- Input oculto -->
+  <input
+    ref="fileInput"
+    type="file"
+    @change="handleFileChange"
+    accept="image/*"
+    :required="!form.id"
+    class="hidden"
+  />
+
+  <!-- Botón que activa el input -->
+  <button
+    type="button"
+    @click="fileInput.click()"
+    class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded"
+  >
+    Seleccionar imagen
+  </button>
+
+  <!-- Nombre del archivo seleccionado -->
+  <p v-if="form.fotoFile" class="mt-2 text-sm text-gray-700">{{ form.fotoFile.name }}</p>
+
+  <!-- Preview -->
+  <div v-if="previewUrl" class="mt-2">
+    <img :src="previewUrl" alt="Preview" class="max-w-xs rounded border" />
+  </div>
+</div>
       <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded">
         {{ form.id ? 'Actualizar' : 'Crear' }}
       </button>
     </form>
 
+      <div v-if="mensaje" :class="[
+      'p-3 rounded text-center',
+      tipoMensaje === 'exito' ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300'
+    ]">
+      {{ mensaje }}
+    </div>
     <!-- LISTADO -->
     <div class="bg-white shadow-md rounded p-6 border border-pink-200">
       <h2 class="text-xl font-bold text-pink-600 mb-4">Publicaciones registradas</h2>
@@ -61,7 +81,7 @@
             <td class="border px-4 py-2">{{ pub.titulo }}</td>
             <td class="border px-4 py-2">{{ pub.categoria.nombre }}</td>
             <td class="border px-4 py-2">
-        <img :src="`${apiBase}${pub.foto.url}`" alt="Foto publicación" class="w-20 h-20 object-cover mx-auto rounded" />
+              <img :src="`${apiBase}${pub.foto.url}`" alt="Foto publicación" class="w-20 h-20 object-cover mx-auto rounded" />
             </td>
             <td class="border px-4 py-2 space-x-2">
               <button @click="editar(pub)" class="bg-yellow-400 hover:bg-yellow-500 px-2 py-1 rounded text-white">Editar</button>
@@ -76,6 +96,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+const fileInput = ref(null)
 
 const apiBase = useRuntimeConfig().public.API_BASE_URL
 const API_CATEGORIAS = `${apiBase}/api/categorias`
@@ -94,13 +115,25 @@ const categorias = ref([])
 const publicaciones = ref([])
 const previewUrl = ref(null)
 
+const mensaje = ref('')
+const tipoMensaje = ref('') // 'exito' o 'error'
+
+const mostrarMensaje = (msg, tipo = 'exito') => {
+  mensaje.value = msg
+  tipoMensaje.value = tipo
+  setTimeout(() => {
+    mensaje.value = ''
+    tipoMensaje.value = ''
+  }, 3000)
+}
+
 const fetchCategorias = async () => {
   try {
     const res = await fetch(API_CATEGORIAS, { credentials: 'include' })
     if (!res.ok) throw new Error('Error al obtener categorías')
     categorias.value = await res.json()
   } catch (error) {
-    console.error(error)
+    mostrarMensaje(error.message, 'error')
   }
 }
 
@@ -110,18 +143,14 @@ const fetchPublicaciones = async () => {
     if (!res.ok) throw new Error('Error al obtener publicaciones')
     publicaciones.value = await res.json()
   } catch (error) {
-    console.error(error)
+    mostrarMensaje(error.message, 'error')
   }
 }
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
   form.value.fotoFile = file
-  if (file) {
-    previewUrl.value = URL.createObjectURL(file)
-  } else {
-    previewUrl.value = null
-  }
+  previewUrl.value = file ? URL.createObjectURL(file) : null
 }
 
 const resetForm = () => {
@@ -137,19 +166,18 @@ const resetForm = () => {
 
 const submitPublicacion = async () => {
   if (!form.value.categoriaId) {
-    alert('Debe seleccionar una categoría')
+    mostrarMensaje('Debe seleccionar una categoría', 'error')
     return
   }
 
   if (!form.value.id && !form.value.fotoFile) {
-    alert('Debe subir una foto')
+    mostrarMensaje('Debe subir una foto', 'error')
     return
   }
 
   try {
     let fotoId = form.value.fotoId
 
-    // SUBIR FOTO si hay nuevo archivo
     if (form.value.fotoFile) {
       const formData = new FormData()
       formData.append('file', form.value.fotoFile)
@@ -161,17 +189,19 @@ const submitPublicacion = async () => {
         credentials: 'include',
       })
 
-      if (!resUpload.ok) throw new Error('Error al subir la foto')
-      const fotoData = await resUpload.json()
-      fotoId = fotoData.id
-      previewUrl.value = fotoData.url
+      const uploadData = await resUpload.json()
+
+      if (!resUpload.ok) throw new Error(uploadData.message || 'Error al subir la foto')
+
+      fotoId = uploadData.id
+      previewUrl.value = uploadData.url
     }
 
     const payload = {
       titulo: form.value.titulo,
       categoriaId: form.value.categoriaId,
       fotoId,
-      usuarioId: 1 // ⚠️ Reemplaza esto si tomas el usuario del JWT
+      usuarioId: 1 // ⚠️ Reemplaza esto por el ID obtenido del JWT
     }
 
     const method = form.value.id ? 'PUT' : 'POST'
@@ -186,13 +216,15 @@ const submitPublicacion = async () => {
       body: JSON.stringify(payload),
     })
 
-    if (!res.ok) throw new Error('Error al guardar publicación')
+    const data = await res.json()
 
+    if (!res.ok) throw new Error(data.message || 'Error al guardar publicación')
+
+    mostrarMensaje(data.message || 'Publicación guardada correctamente')
     await fetchPublicaciones()
     resetForm()
   } catch (error) {
-    console.error(error)
-    alert(error.message)
+    mostrarMensaje(error.message, 'error')
   }
 }
 
@@ -213,11 +245,15 @@ const eliminar = async (id) => {
       method: 'DELETE',
       credentials: 'include',
     })
-    if (!res.ok) throw new Error('Error al eliminar publicación')
+
+    const data = await res.json()
+
+    if (!res.ok) throw new Error(data.message || 'Error al eliminar publicación')
+
+    mostrarMensaje(data.message || 'Publicación eliminada correctamente')
     await fetchPublicaciones()
   } catch (error) {
-    console.error(error)
-    alert('No se pudo eliminar la publicación')
+    mostrarMensaje(error.message, 'error')
   }
 }
 
