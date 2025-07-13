@@ -1,8 +1,8 @@
 <template>
   <div
     :class="[
-      'relative flex flex-col font-y2k fondo-y2k text-[#2e2e2e] min-h-screen',
-      route.path !== '/' ? 'min-h-[110vh]' : ''
+      'relative flex flex-col font-y2k fondo-y2k text-[#2e2e2e]',
+      route.path !== '/' ? 'min-h-[110vh]' : 'min-h-screen'
     ]"
   >
     <!-- HEADER -->
@@ -11,10 +11,20 @@
         <NuxtLink to="/" class="text-2xl font-extrabold tracking-wide text-white hover:text-[#ffd6f9] transition">
           ☆ Home
         </NuxtLink>
-        <div class="flex space-x-6 text-sm md:text-base">
+
+        <div class="flex items-center space-x-6 text-sm md:text-base">
           <NuxtLink to="/design" class="hover:text-[#ffd6f9] transition">Design</NuxtLink>
           <NuxtLink to="/price" class="hover:text-[#ffd6f9] transition">Price</NuxtLink>
           <NuxtLink to="/tos" class="hover:text-[#ffd6f9] transition">TOS</NuxtLink>
+
+          <!-- Botón activar/desactivar Sonic -->
+          <button
+            @click="toggleSonic"
+            class="bg-[#c02fc1] hover:bg-[#a0269e] text-white px-3 py-1 rounded-full text-xs font-semibold transition"
+            aria-label="Toggle Sonic Companion"
+          >
+            {{ sonicActive ? 'Esconder amigo' : 'Mostrar amigo' }}
+          </button>
         </div>
       </nav>
     </header>
@@ -26,13 +36,8 @@
 
     <!-- CONTENEDOR SONIC + FOOTER -->
     <div class="relative">
-      <!-- SONIC CON position:absolute para quedar justo arriba del footer -->
-      <SonicCompanion
-        class="absolute left-4"
-        style="bottom: 56px;"
-      />
+      <SonicCompanion v-if="sonicActive" class="absolute left-4" style="bottom: 56px;" />
 
-      <!-- FOOTER -->
       <footer
         class="bg-[#e651c9] text-white border-t border-[#cba3e4] py-6 z-10"
         style="height: 56px;"
@@ -54,8 +59,14 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import SonicCompanion from '~/components/SonicCompanion.vue'
 
 const route = useRoute()
+const sonicActive = ref(true)
+
+function toggleSonic() {
+  sonicActive.value = !sonicActive.value
+}
 </script>
