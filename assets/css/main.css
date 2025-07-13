@@ -1,1 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&family=Modak&display=swap');
+
 @import "tailwindcss";
+
+@tailwind utilities;
+
+@layer base {
+.font-y2k {
+    font-family: 'Rowdies', cursive;
+  }
+
+
+  .font-y2k-title {
+    font-family: 'Modak', cursive;
+  }
+}
+/*Rowdies,
+titulo Modak	*/
+
+@layer utilities {
+  .fondo-y2k {
+    @apply relative bg-cover bg-no-repeat bg-fixed bg-center;
+    background-image: url('/images/background/IMG_5267.WEBP');
+  }
+}
+ 
+
+  /* Dropdown estilo Y2K */
+  .select-y2k {
+    @apply bg-white/70 backdrop-blur-md border border-[#e0bbf9]
+           text-[#5b2b82] rounded-xl px-4 py-2
+           w-full max-w-xs shadow-md
+           focus:outline-none focus:ring-2 focus:ring-[#e651c9]
+           transition;
+  }
+
+  /* Tarjeta de publicación estilo sticker pastel */
+  .card-y2k {
+    @apply bg-white/80 backdrop-blur-lg border border-[#e0bbf9]
+           rounded-2xl shadow-[0_4px_15px_rgba(200,150,255,0.4)]
+           overflow-hidden hover:scale-[1.02] transition-transform duration-300;
+  }
+
+  /* Título estilizado para publicaciones/categorías */
+ .titulo-categoria-y2k {
+  @apply text-3xl font-bold text-[#e651c9] tracking-wide drop-shadow-md;
+  font-family: 'Rowdies', cursive;
+}
+
+  /* Título de publicación dentro de la tarjeta */
+  .titulo-publicacion-y2k {
+    @apply text-lg font-semibold text-[#a348dc];
+  }
+.scrollbar-stable {
+  scrollbar-gutter: stable;
+}
+.min-h-scroll {
+  min-height: 110vh; /* o 120vh según necesites */
+}

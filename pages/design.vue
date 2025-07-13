@@ -4,12 +4,18 @@
         <!-- Dropdown de categorías -->
         <div>
             <label for="categoriaFiltro" class="font-semibold text-lg mb-2 block">Filter by category:</label>
-            <select id="categoriaFiltro" v-model="categoriaSeleccionada" class="border rounded p-2 w-full max-w-xs">
+            <select id="categoriaFiltro" v-model="categoriaSeleccionada" class="select-y2k w-full max-w-xs">
+
+
                 <option value="">All</option>
-                <option v-for="categoria in categoriasConPublicaciones" :key="categoria.nombre"
-                    :value="categoria.nombre">
-                    {{ categoria.nombre }}
-                </option>
+         <option
+  v-for="categoria in categoriasConPublicaciones"
+  :key="categoria.nombre"
+  :value="categoria.nombre"
+  class="text-[#a348dc] font-semibold"
+>
+  {{ categoria.nombre }}
+</option>
             </select>
         </div>
 
@@ -20,13 +26,14 @@
                 <h2 class="text-3xl font-bold mb-4 text-pink-600">{{ categoria.nombre }}</h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <div v-for="pub in categoria.publicaciones" :key="pub.id"
-                        class="bg-white shadow rounded overflow-hidden">
+                    <div v-for="pub in categoria.publicaciones" :key="pub.id" class="card-y2k">
+
                         <img v-if="pub.foto?.url" :src="urlFoto(pub.foto.url)" :alt="pub.titulo"
                             class="w-full h-48 object-cover cursor-pointer"
                             @click="openPreview(urlFoto(pub.foto.url))" />
                         <div class="p-4">
-                            <h3 class="text-lg font-semibold mb-2">{{ pub.titulo }}</h3>
+                          <h3 class="titulo-publicacion-y2k mb-2">{{ pub.titulo }}</h3>
+
                         </div>
                     </div>
                 </div>
@@ -37,12 +44,14 @@
             <!-- Mostrar solo publicaciones de la categoría seleccionada -->
             <h2 class="text-3xl font-bold mb-4 text-pink-600">{{ categoriaSeleccionada }}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <div v-for="pub in publicacionesFiltradas" :key="pub.id"
-                    class="bg-white shadow rounded overflow-hidden">
+                <div v-for="pub in publicacionesFiltradas" :key="pub.id" 
+                    class="card-y2k">
                     <img v-if="pub.foto?.url" :src="urlFoto(pub.foto.url)" :alt="pub.titulo"
                         class="w-full h-48 object-cover" />
                     <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-2">{{ pub.titulo }}</h3>
+                        <h3 class="titulo-publicacion-y2k mb-2">{{ pub.titulo }}</h3>
+
+
                     </div>
                 </div>
             </div>
