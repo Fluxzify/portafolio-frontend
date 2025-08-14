@@ -90,7 +90,6 @@ const fetchCategorias = async () => {
   }
 }
 
-// Guardar (POST o PUT)
 const submitCategoria = async () => {
   const method = form.value.id ? 'PUT' : 'POST'
   const url = form.value.id ? `${API_URL}/${form.value.id}` : API_URL

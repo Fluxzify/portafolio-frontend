@@ -59,7 +59,7 @@ const handleLogin = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value }),
-      credentials: 'include' // MUY IMPORTANTE para enviar y recibir cookies HttpOnly
+      credentials: 'include'
     })
 
     if (!res.ok) {

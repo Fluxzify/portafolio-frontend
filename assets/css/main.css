@@ -33,7 +33,7 @@ titulo Modak	*/
            focus:outline-none focus:ring-2 focus:ring-[#e651c9]
            transition;
   }
-no
+
   /* Tarjeta de publicación estilo sticker pastel */
   .card-y2k {
     @apply bg-white/80 backdrop-blur-lg border border-[#e0bbf9]
