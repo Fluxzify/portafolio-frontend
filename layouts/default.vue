@@ -23,7 +23,7 @@
             class="bg-[#c02fc1] hover:bg-[#a0269e] text-white px-3 py-1 rounded-full text-xs font-semibold transition"
             aria-label="Toggle Sonic Companion"
           >
-            {{ sonicActive ? 'Esconder amigo' : 'Mostrar amigo' }}
+            {{ sonicActive ? 'Hide Companion' : 'Show Compaion' }}
           </button>
         </div>
       </nav>
