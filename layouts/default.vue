@@ -18,13 +18,7 @@
           <NuxtLink to="/tos" class="hover:text-[#ffd6f9] transition">TOS</NuxtLink>
 
           <!-- Botón activar/desactivar Sonic -->
-          <button
-            @click="toggleSonic"
-            class="bg-[#c02fc1] hover:bg-[#a0269e] text-white px-3 py-1 rounded-full text-xs font-semibold transition"
-            aria-label="Toggle Sonic Companion"
-          >
-            {{ sonicActive ? 'Hide Companion' : 'Show Compaion' }}
-          </button>
+          
         </div>
       </nav>
     </header>
@@ -36,7 +30,7 @@
 
     <!-- CONTENEDOR SONIC + FOOTER -->
     <div class="relative">
-      <SonicCompanion v-if="sonicActive" class="absolute left-4" style="bottom: 56px;" />
+      
 
       <footer
         class="bg-[#e651c9] text-white border-t border-[#cba3e4] py-6 z-10"
@@ -61,12 +55,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import SonicCompanion from '~/components/SonicCompanion.vue'
 
 const route = useRoute()
-const sonicActive = ref(true)
 
-function toggleSonic() {
-  sonicActive.value = !sonicActive.value
-}
+
 </script>
