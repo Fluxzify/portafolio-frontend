@@ -83,3 +83,10 @@ const handleLogin = async () => {
 
 
 </script>
+
+<style>
+button {
+  -webkit-tap-highlight-color: transparent; /* Quita el efecto de selección azul */
+  touch-action: manipulation;               /* Optimiza el toque como click */
+}
+</style>
