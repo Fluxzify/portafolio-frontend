@@ -9,17 +9,17 @@
 export function getImageUrl(path, uploadsBaseUrl) {
   if (!path) return ''
 
-  // Si es URL absoluta (Supabase u otra) → devolver tal cual
-  if (path.startsWith('http')) return path
+  // URL absoluta → encodeURI para evitar errores 400
+  if (path.startsWith('http')) return encodeURI(path)
 
-  // Si es path relativo del backend → concatena
-  return uploadsBaseUrl + '/' + path.replace(/^\/?uploads\/?/, '')
+  // Path relativo del backend
+  const cleanPath = path.replace(/^\/?uploads\/?/, '')
+  return `${uploadsBaseUrl}/${encodeURIComponent(cleanPath)}`
 }
 
 /**
  * Obtiene todas las categorías junto con sus publicaciones
  * Cada publicación tendrá la URL de su foto ya lista para usar
- * @param {string} apiBaseUrl
  */
 export async function getCategoriesWithPosts(apiBaseUrl) {
   const categoriesEndpoint = `${apiBaseUrl}/api/categorias`
@@ -27,7 +27,7 @@ export async function getCategoriesWithPosts(apiBaseUrl) {
   const uploadsBaseUrl = `${apiBaseUrl}/api/uploads`
 
   const resCats = await fetch(categoriesEndpoint, { credentials: 'include' })
-  if (!resCats.ok) throw new Error('Error loading categories')
+  if (!resCats.ok) throw new Error('Error al cargar categorías')
   const categories = await resCats.json()
 
   const categoriesWithPosts = await Promise.all(
@@ -35,10 +35,7 @@ export async function getCategoriesWithPosts(apiBaseUrl) {
       const resPosts = await fetch(`${postsEndpoint}/categoria/${encodeURIComponent(category.nombre)}`, { credentials: 'include' })
       if (!resPosts.ok) return { ...category, publicaciones: [] }
 
-      let publicaciones = await resPosts.json()
-
-      // Reemplazar la URL de la foto usando getImageUrl
-      publicaciones = publicaciones.map(pub => ({
+      const publicaciones = (await resPosts.json()).map(pub => ({
         ...pub,
         foto: {
           ...pub.foto,
@@ -55,8 +52,6 @@ export async function getCategoriesWithPosts(apiBaseUrl) {
 
 /**
  * Obtiene las categorías con la primera publicación de cada una
- * Cada publicación tendrá la URL de su foto ya lista para usar
- * @param {string} apiBaseUrl
  */
 export async function getCategoriesWithFirstPost(apiBaseUrl) {
   const categoriesEndpoint = `${apiBaseUrl}/api/categorias`
@@ -64,7 +59,7 @@ export async function getCategoriesWithFirstPost(apiBaseUrl) {
   const uploadsBaseUrl = `${apiBaseUrl}/api/uploads`
 
   const resCats = await fetch(categoriesEndpoint, { credentials: 'include' })
-  if (!resCats.ok) throw new Error('Error loading categories')
+  if (!resCats.ok) throw new Error('Error al cargar categorías')
   const categories = await resCats.json()
 
   const categoriesWithExample = await Promise.all(
@@ -73,10 +68,9 @@ export async function getCategoriesWithFirstPost(apiBaseUrl) {
       if (!resPosts.ok) return { ...category, publicacion: null }
 
       const posts = await resPosts.json()
-
-      // Si hay publicaciones, reemplaza la URL de la primera
       const firstPost = posts[0] || null
-      if (firstPost && firstPost.foto) {
+
+      if (firstPost?.foto) {
         firstPost.foto.url = getImageUrl(firstPost.foto.url, uploadsBaseUrl)
       }
 
