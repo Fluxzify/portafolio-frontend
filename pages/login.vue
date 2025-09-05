@@ -24,13 +24,12 @@
           required
         />
       </div>
-
-      <button
-        type="submit"
-        class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 px-4 rounded-md"
-      >
-        Iniciar sesión
-      </button>
+<button
+  type="submit"
+  class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 px-4 rounded-md cursor-pointer"
+>
+  Iniciar sesión
+</button>
 
       <p v-if="error" class="text-red-500 text-sm text-center">{{ error }}</p>
     </form>
