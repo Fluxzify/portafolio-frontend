@@ -9,6 +9,12 @@ const uploadsBaseUrl = `${apiBase}/api/uploads`
 const categoriasConEjemplo = ref([])
 const previewImage = ref(null)
 
+// Convierte la URL de la publicación
+const obtenerUrlFoto = (pub) => {
+  if (!pub?.foto?.url) return ''
+  return getImageUrl(pub.foto.url, uploadsBaseUrl)
+}
+
 function openPreview(url) {
   previewImage.value = url
 }
@@ -22,7 +28,16 @@ function handleKeyDown(e) {
 }
 
 onMounted(async () => {
-  categoriasConEjemplo.value = await getCategoriesWithFirstPost(apiBase)
+  const categorias = await getCategoriesWithFirstPost(apiBase)
+
+  // Reemplazamos la URL de cada publicación ya al cargar
+  categoriasConEjemplo.value = categorias.map(cat => {
+    if (cat.publicacion?.foto) {
+      cat.publicacion.foto.url = getImageUrl(cat.publicacion.foto.url, uploadsBaseUrl)
+    }
+    return cat
+  })
+
   window.addEventListener('keydown', handleKeyDown)
 })
 
@@ -52,10 +67,10 @@ onBeforeUnmount(() => {
       <div
         v-if="categoria.publicacion"
         class="aspect-square overflow-hidden cursor-pointer rounded-md shadow-md"
-        @click="openPreview(getImageUrl(categoria.publicacion.foto?.url, uploadsBaseUrl))"
+        @click="openPreview(categoria.publicacion.foto?.url)"
       >
         <img
-          :src="getImageUrl(categoria.publicacion.foto?.url, uploadsBaseUrl)"
+          :src="categoria.publicacion.foto?.url"
           :alt="categoria.publicacion.titulo"
           class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         />
