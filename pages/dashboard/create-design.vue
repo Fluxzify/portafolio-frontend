@@ -80,9 +80,13 @@
             <td class="border px-4 py-2">{{ pub.id }}</td>
             <td class="border px-4 py-2">{{ pub.titulo }}</td>
             <td class="border px-4 py-2">{{ pub.categoria.nombre }}</td>
-            <td class="border px-4 py-2">
-              <img :src="`${apiBase}${pub.foto.url}`" alt="Foto publicación" class="w-20 h-20 object-cover mx-auto rounded" />
-            </td>
+          <td class="border px-4 py-2">
+  <img 
+    :src="pub.foto.url.startsWith('http') ? pub.foto.url : `${apiBase}${pub.foto.url}`" 
+    alt="Foto publicación" 
+    class="w-20 h-20 object-cover mx-auto rounded" 
+  />
+</td>
             <td class="border px-4 py-2 space-x-2">
               <button @click="editar(pub)" class="bg-yellow-400 hover:bg-yellow-500 px-2 py-1 rounded text-white">Editar</button>
               <button @click="eliminar(pub.id)" class="bg-red-500 hover:bg-red-600 px-2 py-1 rounded text-white">Eliminar</button>
