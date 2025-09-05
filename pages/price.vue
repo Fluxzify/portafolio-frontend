@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import ImageModal from '@/components/ImageModal.vue'
-import { getImageUrl, getCategoriesWithFirstPost } from '@/services/postsService.js'
+import { getCategoriesWithFirstPost } from '@/services/postsService.js'
 
 const apiBase = useRuntimeConfig().public.API_BASE_URL
 const uploadsBaseUrl = `${apiBase}/api/uploads`
@@ -9,10 +9,26 @@ const uploadsBaseUrl = `${apiBase}/api/uploads`
 const categoriasConEjemplo = ref([])
 const previewImage = ref(null)
 
-// Convierte la URL de la publicación
-const obtenerUrlFoto = (pub) => {
-  if (!pub?.foto?.url) return ''
-  return getImageUrl(pub.foto.url, uploadsBaseUrl)
+// Función para limpiar y codificar correctamente cualquier URL
+const obtenerUrlFoto = (url) => {
+  if (!url) return ''
+
+  try {
+    if (url.startsWith('http')) {
+      // Para URLs absolutas (Supabase)
+      const u = new URL(url)
+      u.pathname = u.pathname
+        .split('/')
+        .map(seg => encodeURIComponent(decodeURIComponent(seg)))
+        .join('/')
+      return u.toString()
+    }
+    // Para paths relativos del backend
+    const cleanPath = url.replace(/^\/?uploads\/?/, '')
+    return `${uploadsBaseUrl}/${encodeURIComponent(cleanPath)}`
+  } catch (err) {
+    return url // si algo falla, devolver tal cual
+  }
 }
 
 function openPreview(url) {
@@ -33,7 +49,7 @@ onMounted(async () => {
   // Reemplazamos la URL de cada publicación ya al cargar
   categoriasConEjemplo.value = categorias.map(cat => {
     if (cat.publicacion?.foto) {
-      cat.publicacion.foto.url = getImageUrl(cat.publicacion.foto.url, uploadsBaseUrl)
+      cat.publicacion.foto.url = obtenerUrlFoto(cat.publicacion.foto.url)
     }
     return cat
   })
